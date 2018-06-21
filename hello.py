@@ -16,14 +16,17 @@ class BobaRecs:
 
 	def __init__(self):
 		self.boba_places = pd.read_csv('./data/boba_final.csv')
-		self.client = foursquare.Foursquare(client_id='OZ4GERXJVNPFGXB0VXMYQCBH35GK33C403BIFDV4DNKQXHCW', client_secret='M0DOJQ4NS125UCTKPRMXBYULHMRLHSZZ31RE2OUTKY33SPNM')
+		self.client = foursquare.Foursquare(client_id='key-here', client_secret='key-here')
 		self.test_data = pd.read_csv("./data/Reviews.csv")
 		self.log_model = self.train_model()
 		self.vectorizer = None
 
 
 	def get_boba_places(self):
-		# This function converts latitude and longitudes to coordinate string
+		'''
+		    This function converts latitude and longitudes to coordinate string
+		    returns param_list, which is a numpy array of coordinates and the boba place name
+		'''
 		self.boba_places["li"] = self.boba_places['Lat'].map(str) + ", " + self.boba_places['Longitude'].map(str)
 		boba_params = self.boba_places[['li', 'Name']]
 		
@@ -32,7 +35,12 @@ class BobaRecs:
 
 
 	def get_tips(self, params_list):
-
+		'''
+		    This function extracts tips for each boba place using FourSquare API
+		    returns tips: list of actual tips
+		            ids: list of business ids
+			    tips_ids: list of ids for each tip
+		'''
 		queries = []
 		for i in params_list:
 		    queries.append(self.client.venues.search(params={'ll': i['li'], 'query': i['Name']}))
@@ -52,6 +60,11 @@ class BobaRecs:
 
 
 	def get_formatted_tips(self, tips, ids, tips_ids):
+		'''
+		    This function TBD
+		    returns format_tips:
+		            review_ids: 
+		'''
 		format_tips = []
 		ind = 0 
 		review_ids = []
@@ -67,6 +80,10 @@ class BobaRecs:
 
 
 	def train_model(self):
+		'''
+		    This function trains the logistic regression model to classify the rating
+		    returns log_model
+		'''
 		data = list(self.test_data['Text'])
 		data_labels = list(self.test_data['Score'])
 
